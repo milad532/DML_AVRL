@@ -55,6 +55,7 @@ def main(cfg: DictConfig):
         env = gym.make(config['env_id'], obs_configs=obs_configs, reward_configs=reward_configs,
                        terminal_configs=terminal_configs, host='localhost', port=config['port'],
                        seed=cfg.seed, no_rendering=True, **config['env_configs'])
+        # raise ValueError(f"1010101010101010={env._obs_configs}")
         env = EnvWrapper(env, **wrapper_kargs)
         return env
 

@@ -20,7 +20,9 @@ class RlBirdviewAgent():
         # load checkpoint from wandb
         if cfg.wb_run_path is not None:
             api = wandb.Api()
-            run = api.run(cfg.wb_run_path)
+            # raise ValueError(api.run("iccv21-roach/trained-models/1929isj0"))
+            run = api.run("iccv21-roach/trained-models/1929isj0")
+            # run = api.run(cfg.wb_run_path)
             all_ckpts = [f for f in run.files() if 'ckpt' in f.name]
 
             if cfg.wb_ckpt_step is None:
