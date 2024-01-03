@@ -7,9 +7,12 @@ from torch.nn import functional as F
 from stable_baselines3.common.vec_env import VecEnv
 from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.utils import explained_variance
+import logging
+import multiprocessing
 
 from .ppo_buffer import PpoBuffer
 
+logging.basicConfig(level=logging.INFO)
 
 class PPO():
     def __init__(self, policy, env,
@@ -209,7 +212,47 @@ class PPO():
             "train/learning_rate": self.learning_rate
         }
 
+    # def learn(self, total_timesteps, callback=None, seed=2021):
+    #     # reset env seed
+    #     self.env.action_space.seed(seed)
+    #     self.env.observation_space.seed(seed)
+    #     self.env.seed(seed)
+
+    #     self.start_time = time.time()
+
+    #     self.kl_early_stop = 0
+    #     self.t_train_values = 0.0
+
+    #     self.ep_stat_buffer = deque(maxlen=100)
+    #     #inja
+    #     self._last_obs = self.env.reset()
+    #     self._last_dones = np.zeros((self.env.num_envs,), dtype=np.bool)
+
+    #     callback.init_callback(self)
+
+    #     callback.on_training_start(locals(), globals())
+
+    #     while self.num_timesteps < total_timesteps:
+    #         callback.on_rollout_start()
+    #         t0 = time.time()
+    #         self.policy = self.policy.train()
+    #         continue_training = self.collect_rollouts(self.env, callback, self.buffer, self.n_steps)
+    #         self.t_rollout = time.time() - t0
+    #         callback.on_rollout_end()
+
+    #         if continue_training is False:
+    #             break
+
+    #         t0 = time.time()
+    #         self.train()
+    #         self.t_train = time.time() - t0
+    #         callback.on_training_end()
+
+    #     return self
     def learn(self, total_timesteps, callback=None, seed=2021):
+        # Add more detailed logging to track progress and potential issues
+        logging.info("Starting learning process")
+
         # reset env seed
         self.env.action_space.seed(seed)
         self.env.observation_space.seed(seed)
@@ -221,7 +264,19 @@ class PPO():
         self.t_train_values = 0.0
 
         self.ep_stat_buffer = deque(maxlen=100)
-        self._last_obs = self.env.reset()
+
+        try:
+            # Safely attempt to reset the environment and handle any exceptions
+            self._last_obs = self.env.reset()
+        except EOFError as e:
+            logging.error(f"EOFError encountered during environment reset: {e}")
+            # Handle the EOFError specifically, e.g., by reinitializing the environment
+            # self.env = [your method to reinitialize the environment]
+            raise
+        except Exception as e:
+            logging.error(f"Unexpected error during environment reset: {e}")
+            raise
+
         self._last_dones = np.zeros((self.env.num_envs,), dtype=np.bool)
 
         callback.init_callback(self)
@@ -244,6 +299,7 @@ class PPO():
             self.t_train = time.time() - t0
             callback.on_training_end()
 
+        logging.info("Learning process completed")
         return self
 
     def _get_init_kwargs(self):
