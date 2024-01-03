@@ -39,7 +39,7 @@ def main(cfg: DictConfig):
     AgentClass = config_utils.load_entry_point(cfg.agent[agent_name].entry_point)
     agent = AgentClass('config_agent.yaml')
     cfg_agent = OmegaConf.load('config_agent.yaml')
-
+    #inja
     obs_configs = {cfg.ev_id: OmegaConf.to_container(cfg_agent.obs_configs)}
     reward_configs = {cfg.ev_id: OmegaConf.to_container(cfg.actors[cfg.ev_id].reward)}
     terminal_configs = {cfg.ev_id: OmegaConf.to_container(cfg.actors[cfg.ev_id].terminal)}
@@ -49,13 +49,12 @@ def main(cfg: DictConfig):
     wrapper_kargs = cfg_agent.env_wrapper.kwargs
 
     config_utils.check_h5_maps(cfg.train_envs, obs_configs, cfg.carla_sh_path)
-
+    #inja
     def env_maker(config):
         log.info(f'making port {config["port"]}')
         env = gym.make(config['env_id'], obs_configs=obs_configs, reward_configs=reward_configs,
                        terminal_configs=terminal_configs, host='localhost', port=config['port'],
                        seed=cfg.seed, no_rendering=True, **config['env_configs'])
-        # raise ValueError(f"1010101010101010={env._obs_configs}")
         env = EnvWrapper(env, **wrapper_kargs)
         return env
 

@@ -81,7 +81,7 @@ def main(cfg: DictConfig):
         AgentClass = config_utils.load_entry_point(cfg_agent.entry_point)
         agents_dict[ev_id] = AgentClass('config_agent.yaml')
         obs_configs[ev_id] = agents_dict[ev_id].obs_configs
-
+        #inja
         # get obs_configs from agent
         reward_configs[ev_id] = OmegaConf.to_container(ev_cfg.reward)
         terminal_configs[ev_id] = OmegaConf.to_container(ev_cfg.terminal)

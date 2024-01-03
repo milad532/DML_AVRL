@@ -176,7 +176,7 @@ def main(cfg: DictConfig):
             coach_dict[ev_id] = CoachAgentClass('config_coach.yaml')
             for k, v in coach_dict[ev_id].obs_configs.items():
                 obs_configs[ev_id][k] = v
-
+        #inja
         # get obs_configs from agent
         reward_configs[ev_id] = OmegaConf.to_container(ev_cfg.reward)
         terminal_configs[ev_id] = OmegaConf.to_container(ev_cfg.terminal)

@@ -97,8 +97,23 @@ class ValeoAction(object):
             ev_transform.rotation.yaw - wp_transform.rotation.yaw)))
         # r_rotation = -1.0 * (angle_difference / np.pi)
         r_rotation = -1.0 * angle_difference
+########################################### edit        
+        zombie_vehicle_penalty = -5  
+        zombie_walker_penalty = -10 
+
+        reward_for_zombie_vehicle = 0
+        if hazard_vehicle_loc is not None:
+            reward_for_zombie_vehicle = zombie_vehicle_penalty
+
+        reward_for_zombie_walker = 0
+        if hazard_ped_loc is not None:
+            reward_for_zombie_walker = zombie_walker_penalty
 
         reward = r_speed + r_position + r_rotation + terminal_reward + r_action
+        reward += reward_for_zombie_vehicle + reward_for_zombie_walker
+########################################### edit
+        # inja
+        #reward = r_speed + r_position + r_rotation + terminal_reward + r_action
 
         if hazard_vehicle_loc is None:
             txt_hazard_veh = '[]'
